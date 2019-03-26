@@ -2,12 +2,15 @@ import argparse
 import os
 import sys
 import requests
+from xml.etree import ElementTree
 
-BASE_URL = 'https://video.google.com/timedtext'
+BASE_URL = 'https://video.google.com/timedtext?lang='
 
 def get_transcript(lang, vid):
-    response = requests.get('{}/{}?{}'.format(lang, vid))
-    print(response)
+    response = requests.get('{}{}&v={}'.format(BASE_URL, lang, vid))
+    if response.status_code == 200:
+        return ElementTree.fromstring(response.content)
+    return None
 
 if __name__ == "__main__":
     # do some stuff with argparse
@@ -18,6 +21,11 @@ if __name__ == "__main__":
 
     vid = args.vid
     lang = args.lang
-    print(args)
-    get_transcript(lang, vid)
+
+    transcript = get_transcript(lang, vid)
+
+
+    sys.stdout.write("Retrieving video transcript...")
+    print(transcript)
+    sys.exit(0)
     
